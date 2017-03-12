@@ -5,15 +5,17 @@ March 12, 2017
 
 
 #Kim Jong Un Going to Places:
-##Tracking Kim Jong Un's visits around North Korea
+##Tracking Kim Jong Un's Visits around North Korea
 
-The purpose of this R Markdown file is to show how I got the dataset used in the *Kim Jong Un Going to Places* Shiny app.
+The purpose of this R Markdown file is to show how I obtained the data used in the *Kim Jong Un Going to Places* Shiny app.
+
+**Note**: It takes 2-4 minutes to run the entire code for the first time.
 
 ![](http://www.euronews.com/media/download/articlepix/recadree/north-korea-tensions-kim-binoculars-08031.jpg)
 
-## Data sources
+## Data Sources
 
-Information on dates and locations of Kim Jong Un's visits were scraped from the [website of Rodong Sinmun](http://www.rodong.rep.kp/en/), North Korea's official state newspaper. Exact locations, when known, were gathered via web search. Geographic coordinates for the locations were retrieved using the Google Maps API, accessed using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/).
+Information on dates and locations of Kim Jong Un's visits, and links to relevant articles and pictures were scraped from the [website of Rodong Sinmun](http://www.rodong.rep.kp/en/), North Korea's official state newspaper. Exact locations, when known, were gathered via web search. Geographic coordinates for the locations were retrieved using the Google Maps API, accessed using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/).
 
 ## Packages
 
@@ -27,9 +29,9 @@ library(RJSONIO)
 library(RCurl)
 ```
 
-## Scraping Rodong Sinmun
+## Scraping Rodong Sinmun Part 1: Article Information
 
-As of March 11, 2017, the section titled "Supreme Leader's Activity" had a total of 173 articles posted since January 2, 2016. The code below retrieves the article IDs, titles, and post dates and puts them in a tidy dataset.
+As of March 11, 2017, the section titled "Supreme Leader's Activity" had a total of 173 articles posted since January 2, 2016. The code below retrieves the article IDs, titles, and post dates and compiles them in a tidy dataset.
 
 
 ```r
@@ -40,17 +42,20 @@ article_info <- function(i) {
   menu_url <- paste0(menu_url_base, as.character(i)) #get page url
   activities <- read_html(menu_url) #connect to url
   
+  #scrape info and store in data frame
   news <- activities %>%
-    html_nodes(".ListNewsLineContainer") %>% #get relevant information
+    html_nodes(".ListNewsLineContainer") %>%
     html_text() %>%
-    as.data.frame() #store in data frame
+    as.data.frame()
   
   colnames(news) <- "news"
+  
   #separate string into titles and dates
   news <- separate(news, news, into = c("title", "date"), sep = "\\[")
   #separate title string into IDs and titles
   news <- separate(news, title, into=c("id", "title"), sep = "\\.")
-  #clean date strings
+  
+  #remove unnecessary characters from date string
   news$date <- gsub("\\]", "", news$date)
   news$date <- gsub("\\.", "-", news$date)
   
@@ -71,6 +76,12 @@ for (i in 1:7) {
 news$title <- gsub("Farm No", "Farm No. 1116", news$title)
 news$title <- gsub("Paektusan Hero Youth Power Station No", 
                         "Paektusan Hero Youth Power Station No. 3", news$title)
+
+#convert date strings to date objects
+news$date <- as.Date(news$date)
+
+#clean up stray spaces behind article titles
+news$title <- gsub(" $", "", news$title)
 ```
 
 The code below filters the dataset to remove articles where Kim Jong Un is not visiting places but is carrying out some other activity, e.g. getting his picture taken.
@@ -107,11 +118,11 @@ news_filt$loc <- gsub("^ ", "", news_filt$loc)
 news_filt$loc <- gsub(" $", "", news_filt$loc)
 ```
 
-## Getting exact locations
+## Getting Exact Locations
 
 I used `write.csv(news_filt, "news_filt.csv")` to write the data frame into a `.csv` file, and entered information on the exact locations (name of each site, city and/or province) manually after googling the rough location names under the `loc` column.
 
-## Getting geographic coordinates 
+## Getting Geographic Coordinates 
 
 The code below imports the new file containing exact locations, joins it to the old data set, uses the Google Maps API to get the latitude and longtitude for each location, and finally merges everything into one dataframe.
 
@@ -158,14 +169,138 @@ geo_df <- as_tibble(geo_df) %>%
 
 #bind everything into one data frame
 news_loc <- cbind(news_loc, geo_df) %>%
-  select(-loc2)
+  select(-loc, -loc2)
 ```
 
 Last step: export the data into a `.csv` file.
 
 
 ```r
-write.csv(news_loc, "kju_visits.csv")
+write.csv(news_loc, "kju_visits_loc.csv")
+```
+
+## Scraping Rodong Sinmun Part 2: Links to Articles and Photos
+
+The code chunk below retrieves the links to all articles and associated pictures from "Supreme Leader's Activity."
+
+
+```r
+#function to gather links for each article
+
+article_links <- function(i) {
+  menu_url <- paste0(menu_url_base,as.character(i)) #get page url
+  activities <- read_html(menu_url) #connect to page
+  
+  #scrape links
+  links <- html_attr(html_nodes(activities, "a"), "href") %>% 
+    as.data.frame()
+  colnames(links) <- "link"
+  
+  #remove unnecessary characters
+  links <- links %>%
+    filter(grepl("javascript:article_open", link, perl=TRUE))
+  links$link <- gsub("javascript:article_open\\('", "", links$link)
+  links$link <- gsub("'\\)", "", links$link)
+  
+  #add identifying variables
+  links <- links %>%
+    mutate(date = substr(link, 39,48)) %>% #date
+    mutate(date_id = substr(link, 39,53)) %>% #unique date-based id
+    mutate(type = ifelse(grepl("_photo", link, perl=TRUE), #link to picture or article
+                         "pic_link", "article_link")) %>%
+    spread(type, link) %>%
+    na.omit()
+  
+  return(links)
+}
+
+#initialize data frame
+links <- data.frame(matrix(vector(), 0, 4,
+                               dimnames=list(c(), c("date", "date_id", "article_link", "pic_link"))),
+                        stringsAsFactors=F)
+
+#bind data from each page into one data frame
+for (i in 1:7) {
+  links <- rbind(links, article_links(i))
+}
+
+#convert date strings to date objects
+links$date <- as.Date(links$date)
+```
+
+Now, filter out irrelevant links, i.e. for articles that are not about Kim Jong Un going to places.
+
+
+```r
+#filter out links where the date does not match any of the dates in news_filt
+links_filt <- links %>%
+  filter(date %in% news_filt$date)
+
+#identify links where date is not unique, i.e.
+#multiple articles posted on same day
+
+links_filt_mult <- links_filt %>%
+  group_by(date) %>%
+  summarize(count = n()) %>%
+  filter(count > 1)
+
+#for each date where multiple articles were posted, go through each article 
+#to find the title
+
+#articles to check:
+
+links_check <- links_filt %>%
+  filter(date %in% links_filt_mult$date)
+
+#use a function to go through each article link in links_check
+#and retrieve the article title
+
+article_url_base <- "http://rodong.rep.kp/en/"
+
+article_title <- function(link_bit) {
+  article_link <- paste0(article_url_base, link_bit) #url
+  article <- read_html(article_link) #connect to page
+  
+  #get article text
+  text <- article %>%
+    html_nodes(".ArticleContent") %>% 
+    html_text()
+  
+  #get title
+  title <- text[1]
+  
+  #make function slower to avoid crashing the site
+  Sys.sleep(1.5)
+  
+  return(title)
+}
+
+#list of titles of articles in links_check
+titles <- map(links_check$article_link, article_title)
+#turn into dataframe
+titles_df <- titles %>%
+  as.data.frame() %>%
+  t()
+
+#bind titles to links_check
+links_check <- cbind(links_check, titles_df)
+links_check$titles_df <- as.character(links_check$titles_df)
+
+#isolate links to remove based on the titles
+links_rm <- links_check %>%
+  filter(!(titles_df %in% news_filt$title)) %>%
+  rename(title = titles_df)
+
+#filter list of links to include only links to relevant articles
+links_filt2 <- anti_join(links_filt, links_rm) %>%
+  arrange(date)
+```
+
+Export the links into a `.csv` file.
+
+
+```r
+write.csv(links_filt2, "kju_visits_links.csv")
 ```
 
 
