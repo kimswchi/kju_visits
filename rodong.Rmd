@@ -293,7 +293,7 @@ links_rm <- links_check %>%
   filter(!(titles_df %in% news_filt$title)) %>%
   rename(title = titles_df)
 
-#filter list of links to include only links to relevant articles
+#filter links df to remove irrelevant articles
 links_filt2 <- anti_join(links_filt, links_rm) %>%
   arrange(date)
 ```
