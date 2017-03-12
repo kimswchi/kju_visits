@@ -15,7 +15,7 @@ The purpose of this R Markdown file is to show how I obtained the data used in t
 
 ## Data Sources
 
-Information on dates and locations of Kim Jong Un's visits, and links to relevant articles and pictures were scraped from the [website of Rodong Sinmun](http://www.rodong.rep.kp/en/), North Korea's official state newspaper. Exact locations, when known, were gathered via web search. Geographic coordinates for the locations were retrieved using the Google Maps API, accessed using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/).
+Information on dates and locations of Kim Jong Un's visits, and links to relevant articles and pictures were scraped from the website of North Korea's official state newspaper, [Rodong Sinmun](http://www.rodong.rep.kp/en/). Exact locations, when known, were gathered via web search. Geographic coordinates for the locations were retrieved using the Google Maps API, accessed using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/).
 
 ## Packages
 
