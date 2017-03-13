@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   })
   
   #output where KJU was at on the selected date in sentence form
-  output$Visit  <- renderText({
+  output$VisitSingle  <- renderText({
     
     visit_site <- loc$Visit_Site[loc$Date == inputDate()]
     location <- loc$Location[loc$Date == inputDate()]
@@ -145,6 +145,14 @@ shinyServer(function(input, output, session) {
             axis.title.y=element_blank(),
             axis.text.y=element_blank(),
             axis.ticks.y=element_blank())
+  })
+  
+  #output number of visits KJU made in selected date range
+  output$VisitRange  <- renderText({
+    
+    paste("Between", as.character(input$dateRange[1]), "and", 
+          as.character(input$dateRange[2]), "KJU visited", 
+          as.character(nrow(filtered())), "sites:")
   })
   
   #output location data filtered by date range, showing only the date, visit site, and location

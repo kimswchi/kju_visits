@@ -4,7 +4,7 @@ library(shinythemes)
 shinyUI(fluidPage(theme = shinytheme("united"),
   titlePanel("Kim Jong Un Going to Places"),
   h3("Tracking Kim Jong Un's Official Visits Around North Korea"),
-  h5("Note: The app may take a few moments to load."),
+  h5("Note: The app may take several seconds to load all contents."),
   br(),
   
   fluidRow(
@@ -29,18 +29,24 @@ shinyUI(fluidPage(theme = shinytheme("united"),
            conditionalPanel("input.mapType == 'Date range'",
                                plotOutput("mapRange")),
            conditionalPanel("input.mapType == 'Single day'",
-                            plotOutput("mapSingle")))
-  ),
+                            plotOutput("mapSingle")))),
   
-  fluidRow(column(12, 
-    verbatimTextOutput("Visit"),
-    h4("State newspaper coverage:"),
-    h5("Reports"),
-    verbatimTextOutput("Article"),
-    h5("Photos"),
-    verbatimTextOutput("Pic"))
-    ),
+  fluidRow(
+    column(12, 
+           br(),
+           textOutput("VisitSingle"),
+           h5("Reports"),
+           textOutput("Article"),
+           h5("Photos"),
+           textOutput("Pic")
+    )),
   
-  fluidRow(column(12, wellPanel(
+  fluidRow(
+    column(12,  
+           br(),
+           textOutput("VisitRange"),
+           br(),
+           wellPanel(
     tableOutput("results"))))
+  
 ))

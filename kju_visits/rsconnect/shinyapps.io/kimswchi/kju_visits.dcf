@@ -3,6 +3,8 @@ title:
 account: kimswchi
 server: shinyapps.io
 appId: 163290
-bundleId: 744453
+bundleId: 745848
 url: https://kimswchi.shinyapps.io/kju_visits/
-when: 1489383624.01882
+when: 1489448682.12206
+asMultiple: FALSE
+asStatic: FALSE
