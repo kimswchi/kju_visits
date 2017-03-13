@@ -3,6 +3,7 @@
 ##Kim Jong Un Going to Places:
 ##Tracking Kim Jong Un's Official Visits Around North Korea
 
+![](http://kimjongunlookingatthings.com/wp-content/uploads/2015/06/kim-jong-un-looking-at-cheese.jpg)
 
 ###App Description
 
@@ -39,3 +40,5 @@ Packages used in the `server.R` and `ui.R` include `ggmap` for making the map an
     - [R Markdown file](replication files/Rodong.Rmd)
     - [Markdown file](replication files/Rodong.md)
   * [App files](kju_visits) 
+  
+Inspiration: [Kim Jong Un looking at things](http://kimjongunlookingatthings.tumblr.com/)
