@@ -175,6 +175,30 @@ geo_df <- as_tibble(geo_df) %>%
 #bind everything into one data frame
 news_loc <- cbind(news_loc, geo_df) %>%
   select(-loc, -loc2)
+
+#add coordinates to observations that geoCode missed for some reason
+pyongyang_coords <- geoCode("Pyongyang, North Korea")
+kumsanpo_coords <- c("38.60583333", "125.10027778")
+wonsan_coords <- geoCode("Wonsan, Kangwon, North Korea")
+hamhung_coords <- geoCode("Hamhung, South Hamgyong, North Korea")
+sinhung_coords <- geoCode("Sinhung, South Hamgyong, North Korea")
+kanggye_coords <- geoCode("Kanggye, Chagang, North Korea")
+
+news_loc$lat[news_loc$loc_geo == "Pyongyang, North Korea"] <- pyongyang_coords[1]
+news_loc$lon[news_loc$loc_geo == "Pyongyang, North Korea"] <- pyongyang_coords[2]
+news_loc$lat[news_loc$loc_geo == "Kumsanpo, North Korea"] <- kumsanpo_coords[1]
+news_loc$lon[news_loc$loc_geo == "Kumsanpo, North Korea"] <- kumsanpo_coords[2]
+news_loc$lat[news_loc$loc_geo == "Wonsan, Kangwon, North Korea"] <- wonsan_coords[1]
+news_loc$lon[news_loc$loc_geo == "Wonsan, Kangwon, North Korea"] <- wonsan_coords[2]
+news_loc$lat[news_loc$loc_geo == "Hamhung, South Hamgyong, North Korea"] <- hamhung_coords[1]
+news_loc$lon[news_loc$loc_geo == "Hamhung, South Hamgyong, North Korea"] <- hamhung_coords[2]
+news_loc$lat[news_loc$loc_geo == "Sinhung, South Hamgyong, North Korea"] <- sinhung_coords[1]
+news_loc$lon[news_loc$loc_geo == "Sinhung, South Hamgyong, North Korea"] <- sinhung_coords[2]
+news_loc$lat[news_loc$loc_geo == "Kanggye, Chagang, North Korea"] <- kanggye_coords[1]
+news_loc$lon[news_loc$loc_geo == "Kanggye, Chagang, North Korea"] <- kanggye_coords[2]
+
+news_loc$lon <- as.numeric(news_loc$lon)
+news_loc$lat <- as.numeric(news_loc$lat)
 ```
 
 Last step: export the data into a `.csv` file.
@@ -296,6 +320,11 @@ links_rm <- links_check %>%
 #filter links df to remove irrelevant articles
 links_filt2 <- anti_join(links_filt, links_rm) %>%
   arrange(date)
+
+#complete links
+base_url <- "http://rodong.rep.kp/en/"
+links_filt2$article_link <- paste0(base_url, links_filt2$article_link)
+links_filt2$pic_link <- paste0(base_url, links_filt2$pic_link)
 ```
 
 Export the links into a `.csv` file.
