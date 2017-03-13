@@ -28,9 +28,9 @@ Output/features:
 
 ####Making the App
 
-To obtain information on Kim's visits, I scraped the [official state news agency website](http://rodong.rep.kp/en/) for dates and titles of articles reporting his activities. I augmented the data with information on exact locations of each visit site, when available, found by searching on Google. I then added geographic coordinates to the data for making the interactive map. The coordinates were retrieved via Google Maps API using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/). This approach requires the `RJSONIO` and `RCurl` packages. 
+To obtain information on Kim's visits, I scraped the [official state news agency website](http://rodong.rep.kp/en/) for dates and titles of articles reporting his activities. I augmented the data with information on exact locations of each visit site, when available, found by searching on Google. I then added geographic coordinates to the data for making the interactive map. The coordinates were retrieved via Google Maps API using code by [Jose Gonzalez at R-bloggers](https://www.r-bloggers.com/using-google-maps-api-and-r/). This approach requires the `RJSONIO` and `RCurl` packages. More detailed descriptions are included in the replication R Markdown file (linked below).
 
-Other packages used include `ggmap` for making the map and `shinythemes` for setting the theme of the app ("United").
+Packages used in the `server.R` and `ui.R` include `ggmap` for making the map and `shinythemes` for setting the theme of the app ("United").
 
 ####Links
 
