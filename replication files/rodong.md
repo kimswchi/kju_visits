@@ -4,8 +4,8 @@ March 12, 2017
 
 
 
-#Kim Jong Un Going to Places:
-##Tracking Kim Jong Un's Visits around North Korea
+# Kim Jong Un Going to Places:
+## Tracking Kim Jong Un's Visits around North Korea
 
 The purpose of this R Markdown file is to show how I obtained the data used in the *Kim Jong Un Going to Places* Shiny app.
 
