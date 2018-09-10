@@ -5,7 +5,7 @@
 
 ### App Description
 
-This Shiny app tracks Kim Jong Un's official visits around North Korea as reported by North Korea's official state news agency. Users can input single dates and/or a range of dates to see where Kim was on a specific date and/or a range of dates. 
+This [Shiny app](https://kimswchi.shinyapps.io/kju_visits/) tracks Kim Jong Un's official visits around North Korea as reported by North Korea's official state news agency. Users can input single dates and/or a range of dates to see where Kim was on a specific date and/or a range of dates. 
 
 User inputs:
 
