@@ -1,4 +1,4 @@
-# Kim Jong Un Going to Places:
+## Kim Jong Un Going to Places:
 ## Tracking Kim Jong Un's Official Visits Around North Korea
 
 ![](http://kimjongunlookingatthings.com/wp-content/uploads/2015/06/kim-jong-un-looking-at-cheese.jpg)
